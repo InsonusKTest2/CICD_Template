@@ -3,7 +3,7 @@ name: Pull request to master
 on:
   pull_request:
     branches: master
-    types: labeled
+    types: [ labeled, synchronize ]
 
 jobs:
   check_version:
