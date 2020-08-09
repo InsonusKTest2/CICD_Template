@@ -26,7 +26,7 @@ jobs:
       - uses: Thog/action-equals@v1
         with:
           a: ${{ env.VERSION }}
-          b: ${{ steps.version.outputs.next-version}}
+          b: ${{ steps.version.outputs.next-version }}
   # This workflow contains a single job called "build"
   test_debug:
     needs: check_version
@@ -50,6 +50,8 @@ jobs:
 
       - name: Install dependencies
         run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Debug --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity m -c Debug
 
@@ -75,6 +77,8 @@ jobs:
 
       - name: Install dependencies
         run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity m -c Release
 
