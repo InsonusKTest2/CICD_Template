@@ -10,7 +10,7 @@ jobs:
     name: Check version
     runs-on: ubuntu-latest
     steps:
-      - name: calculate next version
+      - name: calculate next versionb with id
         id: version
         uses: patrickjahns/version-drafter-action@v1
         env:
