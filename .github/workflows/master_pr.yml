@@ -25,6 +25,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
+      - name: define where am I
+        run: |
+          pwd
+          ls
       - name: get project version
         run: |
           file=`cat scr/CICD_Template/CICD_Template.csproj`
