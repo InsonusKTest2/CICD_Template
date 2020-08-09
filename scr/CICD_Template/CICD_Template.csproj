@@ -2,6 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Title>CICD_Template</Title>
+        <PackageProjectUrl>https://github.com/InsonusK/CICD_Template</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/InsonusK/CICD_Template</RepositoryUrl>
+        <PackageVersion>1.0.1</PackageVersion>
     </PropertyGroup>
 
 </Project>
