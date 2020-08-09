@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CICD_Template", "CICD_Template\CICD_Template.csproj", "{93AAC597-CDC5-4F7B-919F-A33BDF54ACCE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{93AAC597-CDC5-4F7B-919F-A33BDF54ACCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93AAC597-CDC5-4F7B-919F-A33BDF54ACCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93AAC597-CDC5-4F7B-919F-A33BDF54ACCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93AAC597-CDC5-4F7B-919F-A33BDF54ACCE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
