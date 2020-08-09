@@ -24,6 +24,7 @@ jobs:
         uses: patrickjahns/version-drafter-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
       - name: get project version
         run: |
           file=`cat scr/CICD_Template/CICD_Template.csproj`
