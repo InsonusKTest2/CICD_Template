@@ -4,6 +4,6 @@ namespace CICD_Template
 {
     public class Class1
     {
-        private var i = 2;
+        private var i = 3;
     }
 }
