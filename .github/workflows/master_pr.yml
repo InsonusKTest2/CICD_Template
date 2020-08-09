@@ -6,17 +6,7 @@ on:
     types: labeled
 
 jobs:
-  check_labels:
-    name: Check labels
-    runs-on: ubuntu-latest
-    steps:
-      - uses: docker://agilepathway/pull-request-label-checker:latest
-        with:
-          one_of: major,minor,patch
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-
   check_version:
-    needs: check_labels
     name: Check version
     runs-on: ubuntu-latest
     steps:
@@ -28,6 +18,10 @@ jobs:
       - name: define where am I
         run: |
           pwd
+          ls
+          cd scr
+          ls
+          cd CICD_Template
           ls
       - name: get project version
         run: |
