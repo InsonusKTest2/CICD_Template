@@ -14,6 +14,9 @@ jobs:
         uses: patrickjahns/version-drafter-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: echo calculated version
+        run: |
+          echo "version: ${{ steps.version.outputs.next-version }}"
       - uses: actions/checkout@v2
       - name: get project version
         run: |
@@ -23,8 +26,6 @@ jobs:
       - name: Save version as enviroment
         run: |
           echo ::set-env name=VERSION::$version
-      - name: print ${{ steps.version.outputs.next-version }}
-        run: echo ${{ steps.version.outputs.next-version }}
       - name: print ${{ env.VERSION }}
         run: echo ${{ env.VERSION }}
       - uses: Thog/action-equals@v1
