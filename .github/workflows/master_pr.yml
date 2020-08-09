@@ -29,6 +29,10 @@ jobs:
         run: |
           pwd
           ls
+          cd scr
+          ls
+          cd CICD_Template
+          ls
       - name: get project version
         run: |
           file=`cat scr/CICD_Template/CICD_Template.csproj`
