@@ -15,14 +15,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
-      - name: define where am I
-        run: |
-          pwd
-          ls
-          cd scr
-          ls
-          cd CICD_Template
-          ls
       - name: get project version
         run: |
           file=`cat scr/CICD_Template/CICD_Template.csproj`
@@ -44,6 +36,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: scr
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -68,6 +61,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: scr
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
