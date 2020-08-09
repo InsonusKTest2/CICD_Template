@@ -1,0 +1,167 @@
+name: Pull request to master
+
+on:
+  pull_request:
+    branches: master
+    types: labeled
+
+jobs:
+  check_labels:
+    name: Check labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker://agilepathway/pull-request-label-checker:latest
+        with:
+          one_of: major,minor,patch
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+  check_version:
+    needs: check_labels
+    name: Check version
+    runs-on: ubuntu-latest
+    steps:
+      - name: calculate next version
+        uses: patrickjahns/version-drafter-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: get project version
+        run: |
+          file=`cat scr/CICD_Template/CICD_Template.csproj`
+          version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
+          echo $version
+      - name: Save version as enviroment
+        run: |
+          echo ::set-env name=VERSION::$version
+      - uses: Thog/action-equals@v1
+        with:
+          a: ${{ env.VERSION }}
+          b: ${{ steps.version.outputs.next-version}}
+  # This workflow contains a single job called "build"
+  test_debug:
+    needs: check_version
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.101
+
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity m -c Debug
+
+  test_release:
+    needs: check_version
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.101
+
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity m -c Release
+
+  Build_nupkg:
+    needs: test_debug, test_release
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    container: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pack with dotnet
+        run: dotnet pack scr/CICD_Template/CICD_Template.csproj --output nuget-packages --configuration Release
+      - name: Upload nupkg
+        uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: nuget-packages/*.nupkg
+          if-no-files-found: error
+
+  Push_Nuget:
+    name: Push nupkg to Nuget
+    needs: Build_nupkg
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    container: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+    steps:
+      - name: Download nupkg from build
+        uses: actions/download-artifact@v2
+        with:
+          name: nupkg
+          path: nuget-packages
+
+      - name: Push to nuget
+        run: echo "Fake push to nuget"
+#        run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_DEPLOY_KEY }} --source https://api.nuget.org/v3/index.json
+
+  Push_GitHub:
+    name: Push nupkg to GitHub
+    needs: Build_nupkg
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    container: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+    steps:
+      - name: Download nupkg from build
+        uses: actions/download-artifact@v2
+        with:
+          name: nupkg
+          path: nuget-packages
+      - name: add github source
+        run: dotnet nuget add source https://nuget.pkg.github.com/${{github.repository_owner}}/index.json --name github --username ${{github.repository_owner}} --password ${{secrets.GITHUB_TOKEN}} --store-password-in-clear-text
+      - name: Push to github
+        run: dotnet nuget push nuget-packages/*.nupkg --source github
+
+  update_release_draft:
+    runs-on: ubuntu-latest
+    needs: Push_GitHub, Push_Nuget
+    steps:
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - uses: release-drafter/release-drafter@v5
+        with:
+          version: ${{ format('v{0}', steps.version.outputs.next-version) }}
+        # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
+        # config-name: my-config.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
