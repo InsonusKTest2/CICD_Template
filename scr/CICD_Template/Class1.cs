@@ -4,6 +4,6 @@ namespace CICD_Template
 {
     public class Class1
     {
-        private int i = 5;
+        private int i = 6;
     }
 }
